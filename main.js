@@ -2,6 +2,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');  //url이라는 모듈을 url이라는 변수를 통해 사용할 것이다.
+var qs = require('querystring');
 
 function templateHTML(title, list, body){
   return `
@@ -64,7 +65,7 @@ var app = http.createServer(function(request,response){
         var title = 'WEB - create';
         var list = templateList(filelist);
         var template = templateHTML(title, list, `
-        <form action="http://localhost:3000/process_create" method="post">
+        <form action="http://localhost:3000/create_process" method="post">
         <p><input type="text" name="title" placeholder="title"></p>
         <p>
           <textarea name="description"></textarea>
@@ -76,7 +77,20 @@ var app = http.createServer(function(request,response){
       `);
         response.writeHead(200); //파일 전송 성공
         response.end(template);
-      })
+      });
+    } else if(pathname === '/create_process') {
+      var body = '';
+      request.on('data', function(data){
+        body = body + data;
+      });
+      request.on('end', function(){
+        var post = qs.parse(body);
+        var title = post.title;
+        var description = post.description;
+        console.log(post.title);
+      });
+      response.writeHead(200);
+      response.end('success');
     } else {
       response.writeHead(404); //해당 파일을 찾을 수 없음
       response.end('Not found');
