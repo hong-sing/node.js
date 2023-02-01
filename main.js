@@ -87,10 +87,12 @@ var app = http.createServer(function(request,response){
         var post = qs.parse(body);
         var title = post.title;
         var description = post.description;
-        console.log(post.title);
+        fs.writeFile(`data/${title}`, description, 'utf-8', function(err){
+          response.writeHead(302, {location: `/?id=${title}`});
+          response.end();
+        });
       });
-      response.writeHead(200);
-      response.end('success');
+      
     } else {
       response.writeHead(404); //해당 파일을 찾을 수 없음
       response.end('Not found');
